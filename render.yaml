@@ -1,0 +1,33 @@
+# Render Blueprint Configuration
+# ------------------------------
+# Automatically sets up:
+# 1. A PostgreSQL Database for persistent storage
+# 2. A FastAPI Web Service that connects to it
+
+services:
+  - type: web
+    name: finance-dashboard-api
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: finance-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ALGORITHM
+        value: HS256
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "60"
+      - key: APP_ENV
+        value: production
+      - key: DEBUG
+        value: "false"
+
+databases:
+  - name: finance-db
+    plan: free # Change to "standard" if you need more resources
+    databaseName: finance_prod
+    user: finance_admin

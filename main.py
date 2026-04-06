@@ -1,3 +1,4 @@
+```python
 """
 Finance Data Processing & Access Control Backend
 =================================================
@@ -13,13 +14,18 @@ from fastapi.responses import JSONResponse
 from app.core.config import settings
 from app.core.database import init_db
 from app.api.v1 import auth, users, records, dashboard
+from app.seed import run_seed   # ✅ ADD THIS
 
 
 # ── Lifespan (startup / shutdown) ─────────────────────────────────────────────
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Create DB tables on startup."""
+    """Create DB tables and seed data on startup."""
     await init_db()
+
+    # ✅ AUTO SEED (runs once, skips if data exists)
+    await run_seed()
+
     yield
 
 
@@ -39,7 +45,7 @@ app = FastAPI(
 # ── CORS ──────────────────────────────────────────────────────────────────────
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],           # tighten in production
+    allow_origins=["*"],  # tighten in production
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -68,3 +74,4 @@ async def root():
 @app.get("/api/v1/health", tags=["Health"])
 async def health():
     return {"status": "ok", "environment": settings.APP_ENV}
+

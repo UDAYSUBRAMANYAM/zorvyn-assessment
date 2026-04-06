@@ -1,4 +1,4 @@
-```python
+
 """
 Finance Data Processing & Access Control Backend
 =================================================
